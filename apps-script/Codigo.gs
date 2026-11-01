@@ -3,16 +3,21 @@
  * - La página lee aquí los productos (sin el costo, que es privado).
  * - Cada pedido llega a la pestaña "Pedidos" y se descuenta la cantidad.
  * - Avisos de cada pedido por WhatsApp (CallMeBot) y correo: se configuran en la pestaña "Ajustes".
+ * - Contador de visitas por día en la pestaña "Visitas".
  */
 var ENVIO_GRATIS_DESDE = 60000;
 var VALOR_ENVIO = 18000;
 var PESTANA_PEDIDOS = 'Pedidos';
 var PESTANA_AJUSTES = 'Ajustes';
+var PESTANA_VISITAS = 'Visitas';
 var ENCABEZADOS_PEDIDOS = ['Fecha', 'Pedido', 'Estado', 'Cliente', 'Cédula', 'Celular', 'Departamento',
   'Ciudad', 'Dirección', 'Barrio', 'Indicaciones', 'Productos', 'Subtotal', 'Envío', 'Total',
   'Forma de pago', 'Transferir', 'Cobrar al recibir', 'Transportadora', 'Ganancia'];
 
-function doGet() {
+function doGet(e) {
+  if (e && e.parameter && e.parameter.visita) {
+    try { contarVisita_(); } catch (err) {}
+  }
   var productos = leerProductos_().filter(function (p) { return p.mostrar; }).map(function (p) {
     return { id: p.id, seccion: p.seccion, nombre: p.nombre, precio: p.precio, cantidad: p.cantidad,
       frase: p.frase, descripcion: p.descripcion, fotos: p.fotos };
@@ -165,10 +170,42 @@ function avisar_(numero, c, lineas, subtotal, envio, total, pago, envioAparte, t
   }
 }
 
-/** Ejecuta esta función para crear las pestañas "Pedidos" y "Ajustes" y dar los permisos. */
+function hojaVisitas_() {
+  var ss = SpreadsheetApp.getActive();
+  var sh = ss.getSheetByName(PESTANA_VISITAS);
+  if (!sh) {
+    sh = ss.insertSheet(PESTANA_VISITAS);
+    sh.appendRow(['Fecha', 'Visitas', '', 'Total visitas']);
+    sh.getRange('E1').setFormula('=SUM(B2:B)');
+    sh.setFrozenRows(1);
+    sh.getRange(1, 1, 1, 5).setFontWeight('bold');
+  }
+  return sh;
+}
+
+function contarVisita_() {
+  var lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    var sh = hojaVisitas_();
+    var hoy = Utilities.formatDate(new Date(), 'America/Bogota', 'yyyy-MM-dd');
+    var ultima = sh.getLastRow();
+    if (ultima > 1 && String(sh.getRange(ultima, 1).getDisplayValue()) === hoy) {
+      var celda = sh.getRange(ultima, 2);
+      celda.setValue((Number(celda.getValue()) || 0) + 1);
+    } else {
+      sh.appendRow(["'" + hoy, 1]);
+    }
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/** Ejecuta esta función para crear las pestañas "Pedidos", "Ajustes" y "Visitas" y dar los permisos. */
 function prepararTienda() {
   hojaPedidos_();
   hojaAjustes_();
+  hojaVisitas_();
   Logger.log('Listo. Productos encontrados: ' + leerProductos_().length);
 }
 

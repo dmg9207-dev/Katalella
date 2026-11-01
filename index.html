@@ -458,7 +458,9 @@ function saveCart(){ try{ localStorage.setItem('katalella_cart',JSON.stringify(c
 const prod = id => db.products.find(p=>p.id===id);
 async function loadProducts(){
   try{
-    const r = await fetch(API_URL,{cache:'no-store'});
+    let url = API_URL;
+    try{ if(!sessionStorage.getItem('kat_visita')){ url += '?visita=1'; sessionStorage.setItem('kat_visita','1'); } }catch(e){}
+    const r = await fetch(url,{cache:'no-store'});
     const j = await r.json();
     if(!j.ok) throw new Error('respuesta');
     db.products = j.productos.map(p=>({ id:String(p.id), cat:String(p.seccion||'').toLowerCase(), nombre:p.nombre, precio:Number(p.precio)||0,
