@@ -443,7 +443,7 @@ function art(cat){
 const pic = (p,i=0) => (p.imgs&&p.imgs[i]) ? `<img src="${p.imgs[i]}" alt="${esc(p.nombre)}">` : art(p.cat);
 
 /* ---------- Datos: productos y precios vienen de la hoja de Google ---------- */
-const API_URL = 'PEGAR_AQUI_LA_URL_DE_APPS_SCRIPT';
+const API_URL = 'https://script.google.com/macros/s/AKfycbw4etozFEoBEVDiy6nVsVRPgobtrVPkeHBM0-bO8ZyFDYwFdj-iTDurJaba_S19--b-Rw/exec';
 const db = { settings:{ nequi:'3212972635', llave:'3212972635', titular:'Daniel Sánchez Vergel', envioGratis:60000, envioCosto:18000 }, products:[] };
 let loadState = 'loading';
 /* Cuánto se transfiere y cuánto cobra la transportadora al entregar */
