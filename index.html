@@ -672,7 +672,13 @@ function renderDrawer(){
     d.querySelectorAll('input[name=pago],input[name=envAp]').forEach(r=>r.onchange=paint);
   } else {
     const o=lastOrder, c=cobros(o);
-    const msg=`Hola Katalella 🌸 Hice el pedido ${o.id}\n`+o.items.map(i=>`• ${i.qty} x ${i.nombre} (${fmt(i.precio*i.qty)})`).join('\n')+`\nProductos: ${fmt(o.subtotal)}\nEnvío: ${o.envioGratis?'Gratis':fmt(o.envio)+' por '+o.transportadora}\nTotal: ${fmt(c.total)}\nPago: ${PAGO_TXT[o.pago]}`+(c.transferir?`\nTransferencia: ${fmt(c.transferir)}`:'')+(c.alRecibir?`\nPago al recibir: ${fmt(c.alRecibir)}`:'')+`\n\nEnviar a: ${o.cliente.nombre}\n${o.cliente.direccion}${o.cliente.barrio?', '+o.cliente.barrio:''}\n${o.cliente.ciudad}, ${o.cliente.depto}\nCel: ${o.cliente.celular}`;
+    const msg=`Hola Katalella 🌸 Hice el pedido ${o.id}\n\n`+o.items.map(i=>`• ${i.qty} x ${i.nombre} (${fmt(i.precio*i.qty)})`).join('\n')
+      +`\n\nProductos: ${fmt(o.subtotal)}\nEnvío: ${o.envioGratis?'Gratis':fmt(o.envio)}\nTotal: ${fmt(c.total)}\nPago: ${PAGO_TXT[o.pago]}`
+      +(c.transferir?`\nTransferencia: ${fmt(c.transferir)}`:'')+(c.alRecibir?`\nPago al recibir: ${fmt(c.alRecibir)}`:'')
+      +`\nTransportadora: ${o.transportadora}`
+      +`\n\nEnviar a: ${o.cliente.nombre}\nC.C. ${o.cliente.cedula}\nCel: ${o.cliente.celular}\n${o.cliente.direccion}${o.cliente.barrio?', '+o.cliente.barrio:''}\n${o.cliente.ciudad}, ${o.cliente.depto}`
+      +(o.cliente.notas?`\nIndicaciones: ${o.cliente.notas}`:'');
+    const waUrl=`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`;
     const instr = o.pago==='Contraentrega'
       ? `Pagarás <b class="money" style="color:var(--ink)">${fmt(c.alRecibir)}</b> en efectivo cuando recibas tu pedido. Envíanos el pedido por WhatsApp para despacharlo.`
       : `Transfiere <b class="money" style="color:var(--ink)">${fmt(c.transferir)}</b> al ${o.pago==='Nequi'?'Nequi':'Bre-B'} <b style="color:var(--ink)">${esc(o.pago==='Nequi'?db.settings.nequi:db.settings.llave)}</b> y envíanos el comprobante por WhatsApp.${c.alRecibir?` El envío (${fmt(c.alRecibir)}) lo pagas al recibir.`:''} Despachamos apenas confirmemos tu pago.`;
@@ -683,10 +689,12 @@ function renderDrawer(){
       <p style="color:var(--muted);margin:0;max-width:36ch">${instr}</p>
     </div></div>
     <div class="dfoot">
-      <a class="btn wa" href="https://wa.me/${WA}?text=${encodeURIComponent(msg)}" target="_blank" rel="noopener">Enviar pedido por WhatsApp</a>
-      <span style="font-size:12px;color:var(--muted);text-align:center">WhatsApp: <span style="user-select:all">321 297 2635</span></span>
+      <span id="waAuto" style="font-size:13px;font-weight:600;color:var(--ok);text-align:center">Abriendo WhatsApp para enviarnos tu pedido…</span>
+      <a class="btn wa" href="${waUrl}" target="_blank" rel="noopener">Enviar pedido por WhatsApp</a>
+      <span style="font-size:12px;color:var(--muted);text-align:center">Si no se abrió, toca el botón verde. WhatsApp: <span style="user-select:all">321 297 2635</span></span>
       <button class="btn ghost" data-close>Seguir comprando</button>
     </div>`;
+    if(!o.waAbierto){ o.waAbierto=true; setTimeout(()=>{ try{ location.href=waUrl; }catch(e){} const w=$('waAuto'); if(w) w.textContent='Si WhatsApp no se abrió, toca el botón verde.'; },1500); }
   }
 }
 $('drawer').addEventListener('click',e=>{
