@@ -108,6 +108,14 @@ nav.gender .soon{font-size:10px;font-weight:600;letter-spacing:.06em;text-transf
 .cats{display:flex;gap:8px;overflow-x:auto;padding-block:18px 14px;scrollbar-width:none}
 .cats::-webkit-scrollbar{display:none}
 .chip{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 16px;font-weight:600;color:var(--muted)}
+.chip.gold{border-color:#D9B15A;color:#8A6416;background:linear-gradient(135deg,#FFF8E6,#F7E3B0)}
+.chip.gold[aria-pressed="true"]{background:linear-gradient(135deg,#C9962B,#E8C46A);color:#2A1630;border-color:#C9962B}
+.subcats{padding-block:0 14px}
+.chip.sub{padding:6px 13px;font-size:13px}
+.mat{position:absolute;left:8px;bottom:8px;font-size:11px;font-weight:700;letter-spacing:.03em;padding:4px 9px;border-radius:999px;background:rgb(255 255 255 / .9);color:#6B4A0F;box-shadow:0 1px 4px rgb(0 0 0 / .15);pointer-events:none}
+.pm .big{position:relative}
+.matline{margin:0;font-size:14px}
+.fab{margin:0;font-size:13px;line-height:1.5;color:var(--muted);background:var(--petal-soft);border-radius:10px;padding:10px 12px}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 
 /* Grid */
@@ -268,9 +276,9 @@ td .t img,td .t svg{width:100%;height:100%;object-fit:cover;display:block}
 @media (prefers-reduced-motion:no-preference){.drawer{animation:slide .25s ease-out}@keyframes slide{from{transform:translateX(30px);opacity:.6}}}
 </style>
 
-<meta name="description" content="Aretes, candongas, cadenas, juegos, anillos y pulseras para dama. Envío a toda Colombia, gratis desde $60.000. Paga por Nequi, Bre-B o contraentrega.">
+<meta name="description" content="Oro laminado 18k, aretes, candongas, cadenas, juegos, anillos y pulseras para dama. Envío a toda Colombia, gratis desde $60.000. Paga por Nequi, Bre-B o contraentrega.">
 <meta property="og:title" content="Accesorios Katalella">
-<meta property="og:description" content="Aretes, candongas, cadenas, juegos, anillos y pulseras para dama. Envío a toda Colombia.">
+<meta property="og:description" content="Oro laminado 18k, aretes, candongas, cadenas, juegos, anillos y pulseras para dama. Envío a toda Colombia.">
 <meta property="og:image" content="img/logo-cattleya.jpg">
 <link rel="icon" href="img/logo-cattleya.jpg">
 </head>
@@ -385,6 +393,7 @@ td .t img,td .t svg{width:100%;height:100%;object-fit:cover;display:block}
   <div class="wrap"><h2 class="coltitle">Colección dama</h2></div>
   <div class="wrap">
     <div class="cats" id="cats" role="toolbar" aria-label="Categorías"></div>
+    <div class="cats subcats" id="subcats" role="toolbar" aria-label="Tipos" hidden></div>
     <div class="grid" id="grid"></div>
   </div>
 </main>
@@ -415,6 +424,7 @@ td .t img,td .t svg{width:100%;height:100%;object-fit:cover;display:block}
 (function(){
 const WA = '573212972635';
 const CATS = [
+  {id:'oro laminado', n:'Oro laminado'},
   {id:'aretes', n:'Aretes'},
   {id:'candongas', n:'Candongas'},
   {id:'cadenas', n:'Cadenas'},
@@ -467,7 +477,7 @@ async function loadProducts(){
     const j = await r.json();
     if(!j.ok) throw new Error('respuesta');
     db.products = j.productos.map(p=>({ id:String(p.id), cat:String(p.seccion||'').toLowerCase(), nombre:p.nombre, precio:Number(p.precio)||0,
-      stock:Number(p.cantidad)||0, frase:p.frase, desc:p.descripcion,
+      stock:Number(p.cantidad)||0, frase:p.frase, desc:p.descripcion, tipo:p.tipo||'', material:p.material||'',
       imgs:(p.fotos||[]).map(f=>/^https?:\/\//.test(f)?f:'img/prod/'+f) }));
     if(j.envioGratisDesde) db.settings.envioGratis = j.envioGratisDesde;
     if(j.valorEnvio) db.settings.envioCosto = j.valorEnvio;
@@ -485,17 +495,28 @@ function copy(text,btn){
 window.__copy = copy;
 
 /* ---------- Tienda ---------- */
-let curCat = 'todos';
+let curCat = 'todos', curTipo = '';
 function renderCats(){
   const all=[{id:'todos',n:'Todo'}].concat(CATS);
-  $('cats').innerHTML = all.map(c=>`<button class="chip" data-cat="${c.id}" aria-pressed="${c.id===curCat}">${c.n}</button>`).join('');
+  $('cats').innerHTML = all.map(c=>`<button class="chip${c.id==='oro laminado'?' gold':''}" data-cat="${c.id}" aria-pressed="${c.id===curCat}">${c.n}</button>`).join('');
+  const tipos = curCat==='todos' ? [] : [...new Set(db.products.filter(p=>p.cat===curCat&&p.tipo).map(p=>p.tipo))];
+  $('subcats').innerHTML = tipos.length>1 ? [''].concat(tipos).map(t=>`<button class="chip sub" data-tipo="${esc(t)}" aria-pressed="${t===curTipo}">${t?esc(t):'Todo '+esc(catName(curCat).toLowerCase())}</button>`).join('') : '';
+  $('subcats').hidden = !(tipos.length>1);
 }
+const matTag = p => p.material ? `<span class="mat">${esc(p.material)}</span>` : '';
+const FAB = {
+  'oro laminado 18k':'Fabricado en oro laminado 18k bajo los mejores estándares de calidad, por los mejores artesanos de Santander. Su capa de oro es resistente al uso diario y conserva su brillo con el cuidado adecuado.',
+  'covergold':'Fabricado en covergold bajo los mejores estándares de calidad, por los mejores artesanos de Santander. Un baño dorado duradero con acabado brillante, pensado para lucir todos los días.',
+  'rodio':'Fabricado con baño de rodio bajo los mejores estándares de calidad, por los mejores artesanos de Santander. Brillo intenso y alta resistencia al desgaste.'
+};
+const fabTxt = p => FAB[String(p.material||'').toLowerCase()] || 'Elaborado bajo los mejores estándares de calidad, por los mejores artesanos de Santander.';
 function renderGrid(){
   if(loadState!=='ok'){ $('grid').innerHTML = loadState==='loading' ? '<div class="empty" style="grid-column:1/-1">Cargando productos…</div>' : '<div class="empty" style="grid-column:1/-1">No pudimos cargar los productos. Revisa tu conexión o escríbenos al WhatsApp 321 297 2635.</div>'; return; }
-  const list = db.products.filter(p=>p.activo!==false && (curCat==='todos'||p.cat===curCat));
+  renderCats();
+  const list = db.products.filter(p=>p.activo!==false && (curCat==='todos'||p.cat===curCat) && (!curTipo||p.tipo===curTipo));
   $('grid').innerHTML = list.length ? list.map(p=>`
     <article class="card">
-      <button class="ph" data-open="${p.id}" aria-label="Ver ${esc(p.nombre)}">${pic(p)}${!p.precio?'':p.stock<=0?'<span class="tag out">Agotado</span>':(p.stock<=3?'<span class="tag">Últimas '+p.stock+'</span>':'')}</button>
+      <button class="ph" data-open="${p.id}" aria-label="Ver ${esc(p.nombre)}">${pic(p)}${matTag(p)}${!p.precio?'':p.stock<=0?'<span class="tag out">Agotado</span>':(p.stock<=3?'<span class="tag">Últimas '+p.stock+'</span>':'')}</button>
       <div class="info">
         <span class="cat">${esc(catName(p.cat))}</span>
         <h3>${esc(p.nombre)}</h3>
@@ -506,7 +527,8 @@ function renderGrid(){
     </article>`).join('') : `<div class="empty" style="grid-column:1/-1">Pronto tendremos productos en esta categoría.</div>`;
   
 }
-$('cats').addEventListener('click',e=>{const b=e.target.closest('[data-cat]'); if(!b)return; curCat=b.dataset.cat; renderCats(); renderGrid();});
+$('cats').addEventListener('click',e=>{const b=e.target.closest('[data-cat]'); if(!b)return; curCat=b.dataset.cat; curTipo=''; renderGrid();});
+$('subcats').addEventListener('click',e=>{const b=e.target.closest('[data-tipo]'); if(!b)return; curTipo=b.dataset.tipo; renderGrid();});
 $('grid').addEventListener('click',e=>{
   const a=e.target.closest('[data-add]'); if(a){ addToCart(a.dataset.add); return; }
   const o=e.target.closest('[data-open]'); if(o) openProduct(o.dataset.open);
@@ -533,7 +555,7 @@ function openProduct(id){
     m.innerHTML=`<button class="x" data-close aria-label="Cerrar">✕</button>
     <div class="pm">
       <div>
-        <div class="big">${pic(p,idx)}</div>
+        <div class="big">${pic(p,idx)}${matTag(p)}</div>
         ${n>1?`<div class="thumbs">${p.imgs.map((s,i)=>`<button data-i="${i}" aria-pressed="${i===idx}"><img src="${s}" alt="Foto ${i+1}"></button>`).join('')}</div>`:''}
       </div>
       <div class="txt">
@@ -542,6 +564,8 @@ function openProduct(id){
         <span class="price money">${p.precio?fmt(p.precio):'Precio por definir'}</span>
         ${p.frase?`<p class="frase" style="font-size:17px;color:var(--ink)">“${esc(p.frase)}”</p>`:''}
         <p class="desc">${esc(p.desc||'')}</p>
+        ${p.material?`<p class="matline"><b>Material:</b> ${esc(p.material)}</p>`:''}
+        <p class="fab">${fabTxt(p)}</p>
         <span class="stock">${!p.precio?'Disponible muy pronto':(p.stock>0?p.stock+' disponibles':'Agotado')}</span>
         ${p.precio&&p.stock>0?`<div style="display:flex;gap:10px;align-items:center">
           <div class="qty"><button data-q="-1" aria-label="Menos">−</button><span>${q}</span><button data-q="1" aria-label="Más">+</button></div>
@@ -568,8 +592,12 @@ let step=1, form={}, lastOrder=null, comprobante=null;
 $('cartBtn').onclick=()=>{ step=1; openDrawer(); };
 function openDrawer(){ renderDrawer(); $('drawer').hidden=false; $('overlay').hidden=false; }
 function stepsBar(){ const s=['Carrito','Envío y pago','Listo']; return `<div class="steps">${s.map((t,i)=>`<span class="${i<step?'on':''}">${t}</span>`).join('')}</div>`; }
+const norm = t => String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+const esLocal = f => !!f && norm(f.depto)==='santander' && norm(f.ciudad).includes('carmen');
+const gratis = sub => sub>=db.settings.envioGratis || esLocal(form);
 function shipBox(sub){
   const lim=db.settings.envioGratis;
+  if(esLocal(form)) return `<div class="ship free"><b>¡Envío gratis!</b> Entregamos sin costo en El Carmen de Chucurí, Santander.</div>`;
   if(sub>=lim) return `<div class="ship free"><b>¡Tu envío es gratis!</b> Tu compra llegó a ${fmt(lim)} o más.</div>`;
   const pct=Math.round(sub/lim*100);
   return `<div class="ship pay">Te faltan <b class="money">${fmt(lim-sub)}</b> para el envío gratis. En compras menores a ${fmt(lim)} el envío cuesta <b class="money">${fmt(db.settings.envioCosto)}</b>.<div class="bar"><i style="width:${pct}%"></i></div></div>`;
@@ -578,7 +606,7 @@ const envLine = free => free
   ? `<span><s class="money" style="color:var(--muted)">${fmt(db.settings.envioCosto)}</s> <b style="color:var(--ok)">Gratis</b></span>`
   : `<b class="money">${fmt(db.settings.envioCosto)}</b>`;
 function renderDrawer(){
-  const d=$('drawer'); const sub=subtotal(); const free=sub>=db.settings.envioGratis;
+  const d=$('drawer'); const sub=subtotal(); const free=gratis(sub);
   if(step===1){
     d.innerHTML=`<div class="dhead"><h2>Tu carrito</h2><button class="x" data-close aria-label="Cerrar">✕</button></div>${stepsBar()}
     <div class="dbody">${cart.length? cart.map(c=>{const p=prod(c.id); if(!p) return ''; return `
@@ -642,12 +670,12 @@ function renderDrawer(){
         </div>`}
         <div class="paybox" id="payInfo"></div>
       </fieldset>
-      <fieldset><legend>¿Por cuál empresa te lo enviamos?</legend>
+      ${esLocal(form)?`<fieldset><legend>Entrega</legend><div class="ship free"><b>Entrega local gratis</b> en El Carmen de Chucurí. Te contactamos por WhatsApp para coordinar.</div></fieldset>`:`<fieldset><legend>¿Por cuál empresa te lo enviamos?</legend>
         <div class="two">
           <label class="opt optc"><input type="radio" name="trans" value="Interrapidísimo" ${form.trans==='Interrapidísimo'?'checked':''}><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 7h11v9h-11zM13.5 10h4l3 3v3h-7z"/><circle cx="6.5" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg></span><span><b>Interrapidísimo</b></span></label>
           <label class="opt optc"><input type="radio" name="trans" value="Servientrega" ${form.trans==='Servientrega'?'checked':''}><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 7h11v9h-11zM13.5 10h4l3 3v3h-7z"/><circle cx="6.5" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg></span><span><b>Servientrega</b></span></label>
         </div>
-      </fieldset>
+      </fieldset>`}
       <div class="err" id="coErr" hidden></div>
     </form>
     <div class="dfoot" id="coFoot"></div>`;
@@ -675,6 +703,7 @@ function renderDrawer(){
     };
     paint();
     d.querySelectorAll('input[name=pago],input[name=envAp]').forEach(r=>r.onchange=paint);
+    ['c_depto','c_ciudad'].forEach(id=>{ $(id).onchange=()=>setTimeout(()=>{ const antes=esLocal(form); readForm(); if(esLocal(form)!==antes){ const foco=document.activeElement&&document.activeElement.id; renderDrawer(); if(foco&&$(foco)) $(foco).focus(); toast(esLocal(form)?'¡Envío gratis en El Carmen de Chucurí!':'Envío actualizado'); } },0); });
   } else {
     const o=lastOrder, c=cobros(o);
     const msg=`Hola Katalella 🌸 Hice el pedido ${o.id}\n\n`+o.items.map(i=>`• ${i.qty} x ${i.nombre} (${fmt(i.precio*i.qty)})`).join('\n')
@@ -726,11 +755,11 @@ let sending=false;
 async function confirmOrder(){
   if(sending) return;
   readForm();
-  const sub=subtotal(), free=sub>=db.settings.envioGratis, contra=form.pago==='Contraentrega';
+  const sub=subtotal(), free=gratis(sub), contra=form.pago==='Contraentrega';
   const miss=[];
   if(!form.nombre) miss.push('nombre'); if(!form.cedula) miss.push('cédula'); if(!/^\d{7,10}$/.test(form.celular.replace(/\D/g,''))) miss.push('celular válido');
   if(!form.depto) miss.push('departamento'); if(!form.ciudad) miss.push('ciudad'); if(!form.direccion) miss.push('dirección');
-  if(!form.trans) miss.push('empresa de envío');
+  if(!form.trans && !esLocal(form)) miss.push('empresa de envío');
   const er=$('coErr');
   if(miss.length){ er.textContent='Falta completar: '+miss.join(', ')+'.'; er.hidden=false; er.scrollIntoView({block:'center'}); return; }
   er.hidden=true;
@@ -742,7 +771,7 @@ async function confirmOrder(){
     const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)});
     const j=await r.json();
     if(!j.ok) throw new Error(j.error||'No se pudo registrar el pedido.');
-    lastOrder={id:j.pedido,pago:form.pago,transportadora:form.trans,envioGratis:!j.envio,envio:j.envio,envioAparte:body.envioAparte,cliente,
+    lastOrder={id:j.pedido,pago:form.pago,transportadora:esLocal(form)?'Entrega local':form.trans,envioGratis:!j.envio,envio:j.envio,envioAparte:body.envioAparte,cliente,
       items:cart.map(c=>{const p=prod(c.id); return {id:p.id,nombre:p.nombre,precio:p.precio,qty:c.qty}}), subtotal:j.subtotal};
     cart=[]; saveCart(); updateCount(); step=3; renderDrawer(); loadProducts();
   }catch(e){
