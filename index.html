@@ -108,6 +108,10 @@ nav.gender .soon{font-size:10px;font-weight:600;letter-spacing:.06em;text-transf
 .cats{display:flex;gap:8px;overflow-x:auto;padding-block:18px 14px;scrollbar-width:none}
 .cats::-webkit-scrollbar{display:none}
 .chip{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 16px;font-weight:600;color:var(--muted)}
+.wa-float{position:fixed;z-index:35;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:8px;background:#1F9D55;color:#fff;text-decoration:none;font-weight:700;border-radius:999px;padding:12px 16px;box-shadow:0 6px 18px rgb(0 0 0 / .25)}
+.wa-float svg{width:24px;height:24px}
+@media (max-width:480px){.wa-float span{display:none}.wa-float{padding:13px}}
+.pm .btn.wa{text-align:center}
 .chip.gold{border-color:#D9B15A;color:#8A6416;background:linear-gradient(135deg,#FFF8E6,#F7E3B0)}
 .chip.gold[aria-pressed="true"]{background:linear-gradient(135deg,#C9962B,#E8C46A);color:#2A1630;border-color:#C9962B}
 .subcats{padding-block:0 14px}
@@ -419,6 +423,10 @@ td .t img,td .t svg{width:100%;height:100%;object-fit:cover;display:block}
 <aside class="drawer" id="drawer" hidden aria-label="Carrito"></aside>
 <div class="modal" id="modal" hidden role="dialog" aria-modal="true"></div>
 <div class="toast" id="toast" hidden></div>
+<a class="wa-float" href="https://wa.me/573212972635?text=Hola%20Katalella%20%F0%9F%8C%B8%20quiero%20hacer%20una%20consulta" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp al 321 297 2635">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 2.9 2.9 0 0 0-.9 2.2 5.1 5.1 0 0 0 1.1 2.7 11.6 11.6 0 0 0 4.4 3.9c1.6.7 2.3.8 3.1.6a2.6 2.6 0 0 0 1.7-1.2 2.1 2.1 0 0 0 .2-1.2c-.1-.1-.3-.2-.5-.3Z"/></svg>
+  <span>WhatsApp</span>
+</a>
 
 <script>
 (function(){
@@ -571,6 +579,8 @@ function openProduct(id){
           <div class="qty"><button data-q="-1" aria-label="Menos">−</button><span>${q}</span><button data-q="1" aria-label="Más">+</button></div>
           <button class="btn" data-addm style="flex:1">Agregar al carrito</button></div>`:''}
         <p class="desc" style="font-size:13px">Envío gratis en compras desde ${fmt(db.settings.envioGratis)}. Si es menor, el envío cuesta ${fmt(db.settings.envioCosto)}. Puedes pagar contraentrega.</p>
+        <p class="desc" style="font-size:13px;color:var(--ok);font-weight:600">📍 En El Carmen de Chucurí el envío es gratis, sin importar el valor de tu compra.</p>
+        <a class="btn wa" href="https://wa.me/${WA}?text=${encodeURIComponent('Hola Katalella 🌸 Quiero información sobre: '+p.nombre+' ('+fmt(p.precio)+')')}" target="_blank" rel="noopener">Preguntar por WhatsApp</a>
       </div>
     </div>`;
   }
