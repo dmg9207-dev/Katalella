@@ -229,7 +229,7 @@ function probarAviso() {
 /* ===================== Actualización de catálogo (noviembre) =====================
  * Ejecuta "actualizarCatalogo" UNA vez. Es segura: si la ejecutas de nuevo no repite el aumento
  * ni duplica productos.
- *  - Sube precios: aretes/topos y candongas +10.000; cadenas y pulseras +20.000.
+ *  - NO cambia los precios de los productos que ya estaban.
  *  - Agrega las columnas "material" y "tipo".
  *  - Agrega los productos de oro laminado (pestaña "Oro laminado" en la tienda).
  */
@@ -292,9 +292,9 @@ var ORO = [
   ["o055", "Oro laminado", "Pulseras", "Pulsera trébol negro", 135000, 115000, "Cuatro hojas de buena suerte para ti.", "Cadena fina con tréboles negros de borde dorado, elegancia pura.", "o055-pulsera-trebol-negro.jpg"],
   ["o056", "Oro laminado", "Pulseras", "Pulsera denario Virgen y cruz", 90000, 70000, "Reza, confía y avanza.", "Pulsera tipo denario con medalla de la Virgen y cruz.", "o056-pulsera-denario-virgen-y-cruz.jpg"],
   ["o057", "Oro laminado", "Pulseras", "Pulsera eslabón café fina", 110000, 90000, "Lo delicado también es firme.", "Eslabones tipo grano de café en versión delicada.", "o057-pulsera-eslabon-cafe-fina.jpg"],
-  ["o058", "Oro laminado", "Tobilleras", "Tobillera trébol con circones", 79000, 79000, "Camina segura, la suerte te sigue.", "Cadena fina con trébol de circones para lucir en el tobillo.", "o058-tobillera-trebol-con-circones.jpg"],
-  ["o059", "Oro laminado", "Tobilleras", "Tobillera de bolitas", 60000, 60000, "Pisa fuerte y con estilo.", "Cadena con bolitas doradas, perfecta para el sol y la playa.", "o059-tobillera-de-bolitas.jpg"],
-  ["o060", "Oro laminado", "Tobilleras", "Tobillera de barritas", 65000, 65000, "Cada paso cuenta tu historia.", "Cadena con barritas brillantes, discreta y elegante.", "o060-tobillera-de-barritas.jpg"],
+  ["o058", "Oro laminado", "Tobilleras", "Tobillera trébol con circones", 94000, 79000, "Camina segura, la suerte te sigue.", "Cadena fina con trébol de circones para lucir en el tobillo.", "o058-tobillera-trebol-con-circones.jpg"],
+  ["o059", "Oro laminado", "Tobilleras", "Tobillera de bolitas", 75000, 60000, "Pisa fuerte y con estilo.", "Cadena con bolitas doradas, perfecta para el sol y la playa.", "o059-tobillera-de-bolitas.jpg"],
+  ["o060", "Oro laminado", "Tobilleras", "Tobillera de barritas", 80000, 65000, "Cada paso cuenta tu historia.", "Cadena con barritas brillantes, discreta y elegante.", "o060-tobillera-de-barritas.jpg"],
   ["o061", "Oro laminado", "Cadenas", "Cadena veneciana fina 45 cm", 95000, 75000, "Lleva cerca lo que más amas.", "Cadena veneciana fina de 45 cm, ideal para dijes.", "o061-cadena-veneciana-fina-45-cm.jpg"],
   ["o062", "Oro laminado", "Cadenas", "Cadena gruesa 45 cm", 170000, 150000, "Tu fuerza se nota.", "Cadena de eslabón grueso de 45 cm con mucha presencia.", "o062-cadena-gruesa-45-cm.jpg"],
   ["o063", "Oro laminado", "Cadenas", "Cadena brillante 50 cm", 105000, 85000, "Brilla en cada detalle.", "Cadena de eslabones brillantes de 50 cm.", "o063-cadena-brillante-50-cm.jpg"],
@@ -323,29 +323,20 @@ function actualizarCatalogo() {
   ['material', 'tipo'].forEach(function (col) {
     if (columna_(hoja, col) === 0) hoja.getRange(1, hoja.getLastColumn() + 1).setValue(col);
   });
-  var cId = columna_(hoja, 'id'), cSec = columna_(hoja, 'seccion'), cPre = columna_(hoja, 'precio'),
+  var cId = columna_(hoja, 'id'),
       cMat = columna_(hoja, 'material'), cTipo = columna_(hoja, 'tipo');
-  var props = PropertiesService.getScriptProperties();
   var datos = hoja.getDataRange().getValues();
   var ids = {};
-  var subir = props.getProperty('precios_nov') !== 'hecho';
   for (var r = 1; r < datos.length; r++) {
     var id = String(datos[r][cId - 1]).trim(); if (!id) continue; ids[id] = true;
     if (id.charAt(0) === 'o') continue;
-    var sec = String(datos[r][cSec - 1]).trim().toLowerCase();
-    if (subir) {
-      var inc = (sec === 'aretes' || sec === 'candongas') ? 10000 : (sec === 'cadenas' || sec === 'pulseras') ? 20000 : 0;
-      var pre = Number(String(datos[r][cPre - 1]).replace(/[^\d]/g, '')) || 0;
-      if (inc && pre) hoja.getRange(r + 1, cPre).setValue(pre + inc);
-    }
     if (!String(datos[r][cMat - 1] || '').trim()) hoja.getRange(r + 1, cMat).setValue(RODIO.indexOf(id) >= 0 ? 'Rodio' : 'Covergold');
   }
-  if (subir) props.setProperty('precios_nov', 'hecho');
   var cab = hoja.getRange(1, 1, 1, hoja.getLastColumn()).getValues()[0].map(function (h) { return String(h).trim().toLowerCase(); });
   var nuevos = ORO.filter(function (o) { return !ids[o[0]]; }).map(function (o) {
     var v = { id: o[0], seccion: o[1], tipo: o[2], nombre: o[3], precio: o[4], costo: o[5], frase: o[6], descripcion: o[7], fotos: o[8], mostrar: 'SI', cantidad: '', material: 'Oro laminado 18k' };
     return cab.map(function (h) { return v[h] !== undefined ? v[h] : ''; });
   });
   if (nuevos.length) hoja.getRange(hoja.getLastRow() + 1, 1, nuevos.length, cab.length).setValues(nuevos);
-  Logger.log('Listo. Precios ' + (subir ? 'actualizados' : 'ya estaban actualizados') + '. Productos de oro agregados: ' + nuevos.length);
+  Logger.log('Listo. Productos de oro agregados: ' + nuevos.length);
 }
