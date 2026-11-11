@@ -1,6 +1,6 @@
 [
  {
-  "fecha": "2026-11-12",
+  "fecha": "2026-11-11",
   "turno": "foto",
   "accion": "create_carousel_post",
   "params": {
@@ -13,7 +13,7 @@
   }
  },
  {
-  "fecha": "2026-11-12",
+  "fecha": "2026-11-11",
   "turno": "video",
   "accion": "create_video_post",
   "params": {
@@ -24,7 +24,7 @@
   }
  },
  {
-  "fecha": "2026-11-13",
+  "fecha": "2026-11-12",
   "turno": "foto",
   "accion": "create_carousel_post",
   "params": {
@@ -37,7 +37,7 @@
   }
  },
  {
-  "fecha": "2026-11-13",
+  "fecha": "2026-11-12",
   "turno": "video",
   "accion": "create_video_post",
   "params": {
@@ -48,7 +48,7 @@
   }
  },
  {
-  "fecha": "2026-11-14",
+  "fecha": "2026-11-13",
   "turno": "foto",
   "accion": "create_carousel_post",
   "params": {
@@ -61,7 +61,7 @@
   }
  },
  {
-  "fecha": "2026-11-14",
+  "fecha": "2026-11-13",
   "turno": "video",
   "accion": "create_video_post",
   "params": {
@@ -72,7 +72,7 @@
   }
  },
  {
-  "fecha": "2026-11-15",
+  "fecha": "2026-11-14",
   "turno": "foto",
   "accion": "create_carousel_post",
   "params": {
@@ -85,7 +85,7 @@
   }
  },
  {
-  "fecha": "2026-11-15",
+  "fecha": "2026-11-14",
   "turno": "video",
   "accion": "create_video_post",
   "params": {
@@ -96,7 +96,7 @@
   }
  },
  {
-  "fecha": "2026-11-16",
+  "fecha": "2026-11-15",
   "turno": "foto",
   "accion": "create_carousel_post",
   "params": {
@@ -109,7 +109,7 @@
   }
  },
  {
-  "fecha": "2026-11-16",
+  "fecha": "2026-11-15",
   "turno": "video",
   "accion": "create_video_post",
   "params": {
@@ -120,7 +120,7 @@
   }
  },
  {
-  "fecha": "2026-11-17",
+  "fecha": "2026-11-16",
   "turno": "foto",
   "accion": "create_carousel_post",
   "params": {
@@ -133,7 +133,7 @@
   }
  },
  {
-  "fecha": "2026-11-17",
+  "fecha": "2026-11-16",
   "turno": "video",
   "accion": "create_video_post",
   "params": {
@@ -144,7 +144,7 @@
   }
  },
  {
-  "fecha": "2026-11-18",
+  "fecha": "2026-11-17",
   "turno": "foto",
   "accion": "create_carousel_post",
   "params": {
@@ -157,7 +157,7 @@
   }
  },
  {
-  "fecha": "2026-11-18",
+  "fecha": "2026-11-17",
   "turno": "video",
   "accion": "create_video_post",
   "params": {
@@ -168,7 +168,7 @@
   }
  },
  {
-  "fecha": "2026-11-19",
+  "fecha": "2026-11-18",
   "turno": "foto",
   "accion": "create_carousel_post",
   "params": {
@@ -181,7 +181,7 @@
   }
  },
  {
-  "fecha": "2026-11-19",
+  "fecha": "2026-11-18",
   "turno": "video",
   "accion": "create_video_post",
   "params": {
@@ -192,7 +192,7 @@
   }
  },
  {
-  "fecha": "2026-11-20",
+  "fecha": "2026-11-19",
   "turno": "foto",
   "accion": "create_carousel_post",
   "params": {
@@ -205,7 +205,7 @@
   }
  },
  {
-  "fecha": "2026-11-20",
+  "fecha": "2026-11-19",
   "turno": "video",
   "accion": "create_video_post",
   "params": {
@@ -216,7 +216,7 @@
   }
  },
  {
-  "fecha": "2026-11-21",
+  "fecha": "2026-11-20",
   "turno": "foto",
   "accion": "create_carousel_post",
   "params": {
@@ -229,7 +229,7 @@
   }
  },
  {
-  "fecha": "2026-11-21",
+  "fecha": "2026-11-20",
   "turno": "video",
   "accion": "create_video_post",
   "params": {
@@ -240,7 +240,7 @@
   }
  },
  {
-  "fecha": "2026-11-22",
+  "fecha": "2026-11-21",
   "turno": "foto",
   "accion": "create_carousel_post",
   "params": {
@@ -253,7 +253,7 @@
   }
  },
  {
-  "fecha": "2026-11-22",
+  "fecha": "2026-11-21",
   "turno": "video",
   "accion": "create_video_post",
   "params": {
@@ -264,7 +264,7 @@
   }
  },
  {
-  "fecha": "2026-11-23",
+  "fecha": "2026-11-22",
   "turno": "foto",
   "accion": "create_carousel_post",
   "params": {
@@ -277,7 +277,7 @@
   }
  },
  {
-  "fecha": "2026-11-23",
+  "fecha": "2026-11-22",
   "turno": "video",
   "accion": "create_video_post",
   "params": {
@@ -288,7 +288,7 @@
   }
  },
  {
-  "fecha": "2026-11-24",
+  "fecha": "2026-11-23",
   "turno": "foto",
   "accion": "create_carousel_post",
   "params": {
@@ -301,7 +301,7 @@
   }
  },
  {
-  "fecha": "2026-11-24",
+  "fecha": "2026-11-23",
   "turno": "video",
   "accion": "create_video_post",
   "params": {
@@ -312,7 +312,7 @@
   }
  },
  {
-  "fecha": "2026-11-25",
+  "fecha": "2026-11-24",
   "turno": "foto",
   "accion": "create_carousel_post",
   "params": {
@@ -325,7 +325,7 @@
   }
  },
  {
-  "fecha": "2026-11-25",
+  "fecha": "2026-11-24",
   "turno": "video",
   "accion": "create_video_post",
   "params": {
